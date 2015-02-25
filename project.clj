@@ -10,5 +10,5 @@
   :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
                  [org.clojure/clojurescript "0.0-SNAPSHOT"]
                  [org.clojure/tools.nrepl "0.2.7"]]
-  :main ewen.replique.start-server
+  :aliases {"test-multi-transport" ["run" "-m" "ewen.replique.multi-transport/test-multi-transport"]}
   :jvm-opts ["-Xdebug" "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=57795" "-Dreplique.output.path=out"])
