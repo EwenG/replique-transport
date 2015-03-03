@@ -1,4 +1,5 @@
-(set-env! :dependencies '[[org.clojure/tools.nrepl "0.2.7"]
+(set-env! :dependencies '[[org.clojure/tools.reader "0.8.15"]
+                          [org.clojure/tools.nrepl "0.2.7"]
                           [boot/core "2.0.0-rc10"]
                           [boot/worker "2.0.0-rc10"]
                           [ewen.boot/boot-misc "0.0.1" :scope "test"]
@@ -32,6 +33,11 @@
 (deftask run []
          (comp (checkouts) (gen-pom) (nrepl) (wait)))
 
-(task-options!
-  gen-pom {:project 'ewen/replique-transport
-           :version "0.0.1-SNAPSHOT"})
+(deftask install-jar []
+         (comp (add-src) (pom) (jar) (install)))
+
+(let [project-info {:project 'ewen.replique/replique-transport
+                    :version "0.0.1-SNAPSHOT"}]
+  (task-options!
+    gen-pom project-info
+    pom project-info))
