@@ -4,7 +4,8 @@
             [clojure.set :refer [subset?]]
             [ewen.replique.http-parser :as http]
             [clojure.string :as str]
-            [ewen.replique.utils :as utils]))
+            [ewen.replique.utils :as utils]
+            [clojure.tools.reader.edn :as edn]))
 
 
 
@@ -23,9 +24,9 @@
 (defn nrepl-msg->http-response
   [{:keys [status headers body] :as msg}]
   (let [status (nrepl-status->http-status status)
-        headers (merge headers
-                       {:Server       "ClojureScript REPL"
-                        :Content-Type "text/html; charset=utf-8"})
+        headers (merge {:Server       "ClojureScript REPL"
+                        :Content-Type "text/html; charset=utf-8"}
+                       headers)
         body (binding [*print-readably* true]
                (str body))]
     {:status status :headers headers :body body}))
@@ -67,7 +68,11 @@
         (assoc :http-transport true)
         (dissoc :path)
         (assoc :op (if (= "POST" method)
-                     (-> http-request :args :type name)
+                     (-> http-request
+                         :content
+                         edn/read-string
+                         :type
+                         name)
                      (first path)))
         (assoc :path path))))
 
@@ -99,7 +104,6 @@
     java.io.Closeable
     (close [this]
       (.close in)
-      (.close out)
       (when s (.close s)))))
 
 
