@@ -62,8 +62,12 @@
   (let [op (str/split path #"/")]
     (filter (complement str/blank?) op)))
 
-(defn http-request->nrepl-msg [{{:keys [path method] :as http-request} :request :as http-request-full}]
-  (let [path (parse-path path)]
+(defn http-request->nrepl-msg [{{:keys [path method args] :as http-request} :request :as http-request-full}]
+  (let [path (parse-path path)
+        session (:session args)
+        http-request (if session
+                       (assoc http-request :session session)
+                       http-request)]
     (-> http-request
         (assoc :http-transport true)
         (dissoc :path)
